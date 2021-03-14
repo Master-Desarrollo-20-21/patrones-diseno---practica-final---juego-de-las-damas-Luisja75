@@ -1,0 +1,177 @@
+@startuml
+
+title knowledgeGame - Class Diagram
+
+abstract Class knowledgeGame
+{
+    + Logic : logic
+    + View : view
+    + {abstract} createView(Logic logic)
+    + play()
+}
+Class knowledgeGameGraphics
+{
+	+ createView(Logic logic)
+	+ {static} main()
+}
+Class knowledgeGameConsole
+{
+	+ createView(Logic logic)
+	+ {static} main()
+}
+knowledgeGame <|-- knowledgeGameGraphics
+knowledgeGame <|-- knowledgeGameConsole
+knowledgeGame ..> Logic
+knowledgeGame ..> View
+
+
+class Game
+{
+	+ Player[] : players
+	+ Level : level
+	+ eSubject : subject
+	+ int : shift	
+}
+
+Class Player
+{
+	+ string : name
+	+ int : numberHits
+	+ int : numberFaults
+	+ int : numberJokers
+	+ int : score
+}
+
+Class Question
+{
+	+ Level : level
+	+ eSubject : subject
+	+ String : question
+	+ Answer : answer
+}
+Class Level
+{
+	+ eLevel: level
+	+ int : pointAnswerCorrect
+	+ int : pointAnswerIncorrect
+}
+
+abstract Class Answer
+{
+	+ eTypeAnswer : typeAnswers
+	+ {abstract} getAnswers(Level level) : string[]
+	+ {abstract} getAnswersJoker(Level level) : string[]
+}
+Class AnswerText
+{
+	+ string : answer
+	+ string : answerJoker
+}
+Class AnswerOptions
+{
+	+ string : answerCorrect
+	+ string[] : answersIncorrect
+}
+
+Game *-- Player
+Game ..> Level
+Game ..> eSubject
+Game ..> Questions
+Question *-- Answer
+Question ..> Level
+Question ..> eSubject
+Answer <|-- AnswerText
+Answer <|-- AnswerOptions
+Answer ..> eTypeAnswer
+Level ..> eLevel
+
+enum eLevel
+{
+    1
+    2
+	3
+	RANDOW
+	CHOOSE
+}
+
+enum eSubject
+{
+    MATEMATICAS
+    LENGUAJE
+	RANDOW
+	CHOOSE
+}
+
+enum eTypeAnswer
+{
+    MATEMATICAS
+    LENGUAJE
+	RANDOW
+	CHOOSE
+}
+
+Class Questions << (S,#FF7700) Singleton >>
+{
+	Hashtable (<eSubject>, ArrayList(<Question>)) : hashQuestionSubject
+	Hashtable (<eLevel>, hashQuestionSubject)
+	getRandomQuestion(eLevel, eSubject) : Question
+}
+Questions ..> Question
+
+
+abstract Class Controller
+{
+	+ Game : game
+}
+Class StartController
+{
+}
+Class PlayController
+{
+}
+Class ResumeController
+{
+}
+Class Logic
+{
+	+ Game : game
+    + StartController : startController
+    + PlayController : playController
+    + ResumeController : resumeController
+}
+Controller <|-- StartController
+Controller <|-- PlayController
+Controller <|-- ResumeController
+Logic ..> StartController
+Logic ..> PlayController
+Logic ..> ResumeController
+
+
+abstract Class WithLogicView
+{
+    + Logic logic;
+}
+abstract Class View
+{
+    + interact()
+    + {abstract} start()
+	+ {abstract} play()
+	+ {abstract} isResumed()
+}
+Class GraphicsView
+{
+    + StartView : startView;
+    + PlayView : playView;
+    + BoardView : boardView;
+    + ResumeView : resumeView;
+}
+
+WithLogicView *-- Logic
+WithLogicView <|-- View
+View <|-- GraphicsView
+GraphicsView <|-- StartView
+GraphicsView <|-- PlayView
+GraphicsView <|-- BoardView
+GraphicsView <|-- ResumeView
+
+@enduml
